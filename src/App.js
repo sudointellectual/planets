@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react'
+import Planet from './components/Planet'
+
+import './App.css'
 
 function App() {
+  const [bodies, setBodies] = useState([])
+
+  useEffect(() => {
+    fetch('https://api.le-systeme-solaire.net/rest/bodies/', {
+      method: "GET"
+    })
+    .then((response => response.json()))
+    .then((data) => {
+      let bodies = data.bodies
+      
+      // filter data by isPlanet key
+      bodies = bodies.filter((planet) => (planet.isPlanet === true))
+
+      setBodies(bodies)
+    })
+    .catch((error) => console.log("error: ", error))
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="planet__row">
+          {bodies.map(function(body) {
+            return <Planet key={body.key} body={body} />
+          })}
+        </div>
     </div>
   );
 }
